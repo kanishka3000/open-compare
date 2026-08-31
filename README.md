@@ -60,15 +60,12 @@ delete. Comparing a production folder against a backup cannot damage either one.
 
 ## Getting started
 
-Requirements: macOS, Node 20.19+ or 22.12+ (Vite's floor; developed on Node 24), and Yarn Classic 1.x.
-Everything else, including the Electron runtime itself, comes down with the install.
+Requires macOS, Node 20.19+ or 22.12+, and Yarn 1.x.
 
 ```bash
-yarn install          # downloads the Electron runtime as part of the install
-yarn dev              # run the app with hot reload
+yarn install
+yarn dev
 ```
-
-Scripts:
 
 | command | what it does |
 | --- | --- |
@@ -81,156 +78,44 @@ Scripts:
 
 ## Building for macOS
 
-`yarn build` is the compile step. It type-checks `tsconfig.node.json` and `tsconfig.web.json`
-separately — the main and preload processes against Node types, the renderer against DOM types — and
-only then runs `electron-vite build`, so a type error stops the build rather than shipping into the
-bundle. The output is three entry points under `out/`:
-
-```
-out/
-├── main/main.js           the main process
-├── preload/preload.js     the contextBridge surface
-└── renderer/              index.html plus the hashed JS and CSS assets
-```
-
-`yarn start` runs that bundle through `electron-vite preview`, which is the quickest way to confirm a
-production build behaves like `yarn dev` did before you spend time packaging it.
-
-### Packaging a `.dmg`
-
 ```bash
 yarn dist
 ```
 
-That is `yarn build` followed by `electron-builder --mac`, driven by `electron-builder.yml`. It
-produces **both architectures** — a full Electron runtime is copied into each, so expect roughly
-260 MB of output and about a minute on Apple silicon:
+Builds both architectures into `release/` — roughly 260 MB, about a minute on Apple silicon:
 
 | file | for |
 | --- | --- |
-| `release/Open Compare-<version>-arm64.dmg` | Apple silicon |
-| `release/Open Compare-<version>.dmg` | Intel |
+| `Open Compare-<version>-arm64.dmg` | Apple silicon |
+| `Open Compare-<version>.dmg` | Intel |
 
-The unpacked bundles are left beside them at `release/mac-arm64/Open Compare.app` and
-`release/mac/Open Compare.app`, which is what you want when you are testing a build rather than
-distributing it — drag one straight to `/Applications`, or just double-click it where it sits. The
-`.blockmap` files next to each `.dmg` are for differential updates; nothing reads them unless you add
-an updater.
+The unpacked `.app` bundles are left beside them in `release/mac-arm64/` and `release/mac/`, which is
+what you want when testing rather than distributing. For a single architecture, pass the flag
+through: `yarn build && npx electron-builder --mac --arm64`.
 
-The first run of a build downloads the Electron zip for whichever architecture you are not on, so
-allow extra time and a network connection for it. Subsequent builds reuse the cache in
-`~/Library/Caches/electron`.
+The build is **unsigned**, which is fine on your own machine. A `.dmg` sent over the internet arrives
+quarantined, and Gatekeeper reports an unsigned app as "damaged and can't be opened" — misleading
+wording for "unsigned", not a corrupt download. Recipients can get past it with right-click › Open.
+Distributing properly needs a Developer ID certificate in your keychain and notarisation turned on in
+`electron-builder.yml`:
 
-To skip the architecture you do not need, call `electron-builder` directly — the `--arm64` and `--x64`
-flags override the target list in the config:
-
-```bash
-yarn build && npx electron-builder --mac --arm64    # Apple silicon only, roughly half the time
-yarn build && npx electron-builder --mac --x64      # Intel only
+```yaml
+mac:
+  notarize:
+    teamId: XXXXXXXXXX
 ```
 
-Bump `version` in `package.json` before packaging a release — it is what names the `.dmg` and what
-shows in **Open Compare › About**.
+with `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD` and `APPLE_TEAM_ID` exported before `yarn dist`.
 
-### Signing and notarisation
-
-`yarn dist` produces an **unsigned** app. `hardenedRuntime` is on in `electron-builder.yml`, but with
-no Developer ID identity in your keychain electron-builder logs
-`skipped macOS application code signing` and packages the app as it is. That is fine on the machine
-that built it and fine for a colleague you hand the `.dmg` to directly.
-
-It is not fine for distribution. A `.dmg` that arrives over the internet carries a quarantine flag,
-and Gatekeeper refuses to open an unsigned app that has one — the recipient sees "Open Compare is
-damaged and can't be opened", which is Gatekeeper's misleading wording for "unsigned", not a corrupt
-download. They can get past it with **right-click › Open** (or `xattr -dr com.apple.quarantine
-"/Applications/Open Compare.app"`), but the real fix is to sign and notarise:
-
-1. Get a **Developer ID Application** certificate from an Apple Developer Program account and install
-   it in your login keychain. `security find-identity -v -p codesigning` should list it —
-   electron-builder picks it up automatically once it is there.
-2. Add an app-specific password for notarisation and export the credentials before building:
-
-   ```bash
-   export APPLE_ID="you@example.com"
-   export APPLE_APP_SPECIFIC_PASSWORD="xxxx-xxxx-xxxx-xxxx"
-   export APPLE_TEAM_ID="XXXXXXXXXX"
-   ```
-
-3. Turn on notarisation in `electron-builder.yml`:
-
-   ```yaml
-   mac:
-     notarize:
-       teamId: XXXXXXXXXX
-   ```
-
-Then `yarn dist` signs, uploads to Apple, waits for the ticket and staples it. Notarisation adds
-several minutes per architecture. Verify the result with
-`spctl -a -vvv "release/mac-arm64/Open Compare.app"`, which should report
-`accepted / source=Notarized Developer ID`.
-
-### Application icon
-
-The icon is drawn as vector art and rasterised into the `.icns` the bundle needs:
-
-```
-build/
-├── icon.svg          the artwork, 1024×1024
-├── icon-small.svg    a simplified cut for the 16 / 32 / 64px slices
-├── make-icon.sh      rasterises both into icon.icns and icon.png
-├── icon.icns         what electron-builder packages
-└── icon.png          the dock icon under `yarn dev`
-```
-
-`icon.icns` and `icon.png` are committed, so building the app needs nothing extra. Re-run
-`./build/make-icon.sh` after editing either SVG — it needs `rsvg-convert`
-(`brew install librsvg`); `iconutil` ships with macOS.
-
-Two SVGs rather than one because an icon has to survive being drawn at 16px in a Finder list. The
-full artwork's five rows per pane turn to grey mush at that size, so the script renders every slice
-of 64px and below from `icon-small.svg`, which says the same thing with three heavier rows.
-
-### Why development builds used to say "Electron"
-
-A packaged build carries its own name and icon in `Info.plist`. `yarn dev` does not — it runs the
-app inside the stock `Electron.app` under `node_modules`, and macOS takes the Dock icon, the Dock
-tooltip and the force-quit name from *that* bundle on disk. No amount of `app.setName` reaches them,
-because the Dock reads the bundle rather than asking the running process.
-
-Three things together fix it, and each covers a different surface:
-
-| | fixes |
-| --- | --- |
-| `app.setName` in `main.ts` | the menu bar title and the `userData` path |
-| `DockIcon` applying `icon.png` | the Dock icon, whenever `app.isPackaged` is false |
-| `scripts/brand-dev-electron.sh` | the Dock **label**, tooltip and force-quit name |
-
-The script stamps `CFBundleName` and `CFBundleDisplayName` onto the development `Electron.app` and
-copies `icon.icns` over its `electron.icns`. It runs from `postinstall`, because `yarn install`
-re-extracts that bundle and resets it. It never fails an install — if Electron is not unpacked yet
-there is simply nothing to brand.
-
-To confirm it took, with the app running:
-
-```bash
-lsappinfo list | grep -A2 "Open Compare"    # LSDisplayName should read Open Compare
-```
-
-The bundle identifier still reads `com.github.Electron` in development, which is expected and only
-cosmetic — the packaged app uses `com.opencompare.app`.
-
-### Troubleshooting
+Troubleshooting:
 
 - **The app will not launch after `yarn install`.** The Electron binary download was skipped — run
   `node node_modules/electron/install.js` to fetch it.
-- **`yarn dist` fails with `Unable to detach device cleanly … Resource busy`.** macOS held the disk
-  image open while it was being finalised, usually Spotlight or an endpoint agent. The `.app` bundle
-  in `release/mac-<arch>/` is already complete at that point; re-running the command produces the
-  `.dmg`.
-- **The build fails on a type error but the app runs under `yarn dev`.** `yarn dev` does not
-  type-check. Run `yarn typecheck` to see both projects' errors on their own.
-- **A stale bundle keeps coming back.** Delete `out/`, `release/` and the `*.tsbuildinfo` files;
-  incremental type-check state survives an otherwise clean rebuild.
+- **`yarn dist` fails with `Unable to detach device cleanly … Resource busy`.** Spotlight or an
+  endpoint agent held the disk image open while it was being finalised. The `.app` bundle in
+  `release/mac-<arch>/` is already complete; re-running produces the `.dmg`.
+- **A type error stops the build but `yarn dev` was fine.** `yarn dev` does not type-check; run
+  `yarn typecheck` to see both projects' errors on their own.
 
 ## Menu and keyboard
 
