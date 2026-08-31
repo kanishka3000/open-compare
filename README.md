@@ -163,10 +163,28 @@ several minutes per architecture. Verify the result with
 
 ### Application icon
 
-There is no `build/` directory, so the packaged app currently ships the default Electron icon —
-electron-builder says as much: `default Electron icon is used`. To give it its own, drop a
-1024×1024 `icon.icns` at `build/icon.icns`; the `buildResources: build` line in
-`electron-builder.yml` already points there, so nothing else needs changing.
+The icon is drawn as vector art and rasterised into the `.icns` the bundle needs:
+
+```
+build/
+├── icon.svg          the artwork, 1024×1024
+├── icon-small.svg    a simplified cut for the 16 / 32 / 64px slices
+├── make-icon.sh      rasterises both into icon.icns and icon.png
+├── icon.icns         what electron-builder packages
+└── icon.png          the dock icon under `yarn dev`
+```
+
+`icon.icns` and `icon.png` are committed, so building the app needs nothing extra. Re-run
+`./build/make-icon.sh` after editing either SVG — it needs `rsvg-convert`
+(`brew install librsvg`); `iconutil` ships with macOS.
+
+Two SVGs rather than one because an icon has to survive being drawn at 16px in a Finder list. The
+full artwork's five rows per pane turn to grey mush at that size, so the script renders every slice
+of 64px and below from `icon-small.svg`, which says the same thing with three heavier rows.
+
+A packaged app takes its dock icon from the bundle, but `yarn dev` runs under the stock Electron
+binary and would otherwise show the Electron logo. `DockIcon` applies `icon.png` at startup when
+`app.isPackaged` is false, which is the only reason that PNG exists.
 
 ### Troubleshooting
 

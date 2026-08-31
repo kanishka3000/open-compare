@@ -4,6 +4,7 @@ import { FileDiffBuilder } from '../core/FileDiffBuilder';
 import { ApplicationMenu } from './ApplicationMenu';
 import { ApplicationWindow } from './ApplicationWindow';
 import { ComparisonService } from './ComparisonService';
+import { DockIcon } from './DockIcon';
 import { FailureTranslator } from './FailureTranslator';
 import { FileDiffService } from './FileDiffService';
 import { FolderSelectionDialog } from './FolderSelectionDialog';
@@ -31,6 +32,7 @@ const application = buildApplication();
 app.whenReady().then(() => {
   application.router.register();
   application.menu.install();
+  new DockIcon().apply();
   application.window.create();
 
   app.on('activate', () => {

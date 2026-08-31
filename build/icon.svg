@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0.55" y2="1">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="0.55" stop-color="#4338CA"/>
+      <stop offset="1" stop-color="#312E81"/>
+    </linearGradient>
+
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.20"/>
+      <stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <linearGradient id="pane" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E9EDF5"/>
+    </linearGradient>
+
+    <filter id="paneShadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#12103A" flood-opacity="0.34"/>
+    </filter>
+  </defs>
+
+  <!-- rounded-square app plate on Apple's 824pt grid -->
+  <g filter="url(#paneShadow)">
+    <rect x="100" y="100" width="824" height="824" rx="184" fill="url(#plate)"/>
+  </g>
+  <rect x="100" y="100" width="824" height="824" rx="184" fill="url(#sheen)"/>
+
+  <!-- left pane -->
+  <g filter="url(#paneShadow)">
+    <rect x="196" y="232" width="292" height="560" rx="34" fill="url(#pane)"/>
+  </g>
+  <g>
+    <rect x="232" y="280" width="220" height="56" rx="28" fill="#C6CEDE"/>
+    <rect x="232" y="382" width="220" height="56" rx="28" fill="#EF4444"/>
+    <rect x="232" y="484" width="220" height="56" rx="28" fill="#C6CEDE"/>
+    <rect x="232" y="586" width="150" height="56" rx="28" fill="#C6CEDE"/>
+    <rect x="232" y="688" width="196" height="56" rx="28" fill="#C6CEDE"/>
+  </g>
+
+  <!-- right pane -->
+  <g filter="url(#paneShadow)">
+    <rect x="536" y="232" width="292" height="560" rx="34" fill="url(#pane)"/>
+  </g>
+  <g>
+    <rect x="572" y="280" width="220" height="56" rx="28" fill="#C6CEDE"/>
+    <rect x="572" y="382" width="220" height="56" rx="28" fill="#22C55E"/>
+    <rect x="572" y="484" width="220" height="56" rx="28" fill="#C6CEDE"/>
+    <rect x="572" y="586" width="188" height="56" rx="28" fill="#C6CEDE"/>
+    <rect x="572" y="688" width="196" height="56" rx="28" fill="#C6CEDE"/>
+  </g>
+</svg>
