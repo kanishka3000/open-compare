@@ -33,7 +33,7 @@ export function useFileDiff(
     latestRequestId.current = requestId;
     setState({ diff: null, isLoading: true, errorMessage: null });
 
-    void window.macCompare
+    void window.openCompare
       .diffFile({ leftPath: selection.leftPath, rightPath: selection.rightPath, options })
       .then((outcome) => {
         if (latestRequestId.current !== requestId) {

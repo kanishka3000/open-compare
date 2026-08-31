@@ -7,13 +7,13 @@ import type {
 import type { FileDiffResult } from '../core/models/FileDiffResult';
 
 export const IPC_CHANNEL = {
-  selectFolder: 'mac-compare/select-folder',
-  compareDirectories: 'mac-compare/compare-directories',
-  cancelComparison: 'mac-compare/cancel-comparison',
-  diffFile: 'mac-compare/diff-file',
-  revealInFinder: 'mac-compare/reveal-in-finder',
-  comparisonProgress: 'mac-compare/comparison-progress',
-  menuCommand: 'mac-compare/menu-command',
+  selectFolder: 'open-compare/select-folder',
+  compareDirectories: 'open-compare/compare-directories',
+  cancelComparison: 'open-compare/cancel-comparison',
+  diffFile: 'open-compare/diff-file',
+  revealInFinder: 'open-compare/reveal-in-finder',
+  comparisonProgress: 'open-compare/comparison-progress',
+  menuCommand: 'open-compare/menu-command',
 } as const;
 
 export type MenuCommand =
@@ -42,7 +42,7 @@ export type OperationResult<TValue> =
 
 export type OperationFailureReason = 'cancelled' | 'missing-folder' | 'failed';
 
-export interface MacCompareApi {
+export interface OpenCompareApi {
   selectFolder(dialogTitle: string): Promise<string | null>;
   compareDirectories(
     request: CompareDirectoriesRequest,

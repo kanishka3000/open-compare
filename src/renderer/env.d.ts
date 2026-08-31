@@ -1,8 +1,8 @@
-import type { MacCompareApi } from '../shared/ipc';
+import type { OpenCompareApi } from '../shared/ipc';
 
 declare global {
   interface Window {
-    readonly macCompare: MacCompareApi;
+    readonly openCompare: OpenCompareApi;
   }
 }
 

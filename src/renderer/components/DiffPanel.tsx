@@ -84,7 +84,7 @@ export function DiffPanel({
   const revealInFinder = useCallback(() => {
     const target = selection?.leftPath ?? selection?.rightPath;
     if (target) {
-      void window.macCompare.revealInFinder(target);
+      void window.openCompare.revealInFinder(target);
     }
   }, [selection]);
 

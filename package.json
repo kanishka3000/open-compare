@@ -1,10 +1,10 @@
 {
-  "name": "mac-compare",
+  "name": "open-compare",
   "version": "1.0.0",
   "description": "Directory and file comparison tool for macOS",
   "private": true,
   "main": "./out/main/main.js",
-  "author": "mac-compare",
+  "author": "open-compare",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && electron-vite build",

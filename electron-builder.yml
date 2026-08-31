@@ -1,5 +1,5 @@
-appId: com.maccompare.app
-productName: Mac Compare
+appId: com.opencompare.app
+productName: Open Compare
 directories:
   output: release
   buildResources: build
@@ -17,4 +17,4 @@ mac:
   hardenedRuntime: true
   gatekeeperAssess: false
 dmg:
-  title: Mac Compare
+  title: Open Compare

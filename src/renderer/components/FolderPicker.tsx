@@ -9,7 +9,7 @@ interface FolderPickerProps {
 
 export function FolderPicker({ label, path, onPathChange }: FolderPickerProps): React.JSX.Element {
   const browse = useCallback(async () => {
-    const selected = await window.macCompare.selectFolder(`Select the ${label.toLowerCase()} folder`);
+    const selected = await window.openCompare.selectFolder(`Select the ${label.toLowerCase()} folder`);
     if (selected) {
       onPathChange(selected);
     }

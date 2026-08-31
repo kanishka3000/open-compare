@@ -5,5 +5,5 @@ export function useMenuCommands(handler: (command: MenuCommand) => void): void {
   const latestHandler = useRef(handler);
   latestHandler.current = handler;
 
-  useEffect(() => window.macCompare.onMenuCommand((command) => latestHandler.current(command)), []);
+  useEffect(() => window.openCompare.onMenuCommand((command) => latestHandler.current(command)), []);
 }

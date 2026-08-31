@@ -4,7 +4,7 @@ import {
   IPC_CHANNEL,
   type CompareDirectoriesRequest,
   type DiffFileRequest,
-  type MacCompareApi,
+  type OpenCompareApi,
   type MenuCommand,
 } from '../shared/ipc';
 
@@ -14,7 +14,7 @@ function subscribe<TPayload>(channel: string, listener: (payload: TPayload) => v
   return () => ipcRenderer.off(channel, handler);
 }
 
-const api: MacCompareApi = {
+const api: OpenCompareApi = {
   selectFolder: (dialogTitle: string) => ipcRenderer.invoke(IPC_CHANNEL.selectFolder, dialogTitle),
   compareDirectories: (request: CompareDirectoriesRequest) =>
     ipcRenderer.invoke(IPC_CHANNEL.compareDirectories, request),
@@ -27,4 +27,4 @@ const api: MacCompareApi = {
     subscribe(IPC_CHANNEL.menuCommand, listener),
 };
 
-contextBridge.exposeInMainWorld('macCompare', api);
+contextBridge.exposeInMainWorld('openCompare', api);

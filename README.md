@@ -1,11 +1,11 @@
-# Mac Compare
+# Open Compare
 
 A WinMerge-style directory and file comparison tool for macOS, built with TypeScript, Electron and
 React. Point it at two folders, and it shows you a merged tree of everything that is identical,
 different, or present on only one side — then a synchronised side-by-side diff of any file you pick,
 with word-level highlighting of what actually changed.
 
-**Mac Compare never writes to your files.** It opens everything read-only; there is no copy, merge or
+**Open Compare never writes to your files.** It opens everything read-only; there is no copy, merge or
 delete. Comparing a production folder against a backup cannot damage either one.
 
 ![Side-by-side diff in the light theme](docs/screenshot-light.png)
@@ -100,11 +100,11 @@ produces **both architectures** — a full Electron runtime is copied into each,
 
 | file | for |
 | --- | --- |
-| `release/Mac Compare-<version>-arm64.dmg` | Apple silicon |
-| `release/Mac Compare-<version>.dmg` | Intel |
+| `release/Open Compare-<version>-arm64.dmg` | Apple silicon |
+| `release/Open Compare-<version>.dmg` | Intel |
 
-The unpacked bundles are left beside them at `release/mac-arm64/Mac Compare.app` and
-`release/mac/Mac Compare.app`, which is what you want when you are testing a build rather than
+The unpacked bundles are left beside them at `release/mac-arm64/Open Compare.app` and
+`release/mac/Open Compare.app`, which is what you want when you are testing a build rather than
 distributing it — drag one straight to `/Applications`, or just double-click it where it sits. The
 `.blockmap` files next to each `.dmg` are for differential updates; nothing reads them unless you add
 an updater.
@@ -122,7 +122,7 @@ yarn build && npx electron-builder --mac --x64      # Intel only
 ```
 
 Bump `version` in `package.json` before packaging a release — it is what names the `.dmg` and what
-shows in **Mac Compare › About**.
+shows in **Open Compare › About**.
 
 ### Signing and notarisation
 
@@ -132,10 +132,10 @@ no Developer ID identity in your keychain electron-builder logs
 that built it and fine for a colleague you hand the `.dmg` to directly.
 
 It is not fine for distribution. A `.dmg` that arrives over the internet carries a quarantine flag,
-and Gatekeeper refuses to open an unsigned app that has one — the recipient sees "Mac Compare is
+and Gatekeeper refuses to open an unsigned app that has one — the recipient sees "Open Compare is
 damaged and can't be opened", which is Gatekeeper's misleading wording for "unsigned", not a corrupt
 download. They can get past it with **right-click › Open** (or `xattr -dr com.apple.quarantine
-"/Applications/Mac Compare.app"`), but the real fix is to sign and notarise:
+"/Applications/Open Compare.app"`), but the real fix is to sign and notarise:
 
 1. Get a **Developer ID Application** certificate from an Apple Developer Program account and install
    it in your login keychain. `security find-identity -v -p codesigning` should list it —
@@ -158,7 +158,7 @@ download. They can get past it with **right-click › Open** (or `xattr -dr com.
 
 Then `yarn dist` signs, uploads to Apple, waits for the ticket and staples it. Notarisation adds
 several minutes per architecture. Verify the result with
-`spctl -a -vvv "release/mac-arm64/Mac Compare.app"`, which should report
+`spctl -a -vvv "release/mac-arm64/Open Compare.app"`, which should report
 `accepted / source=Notarized Developer ID`.
 
 ### Application icon

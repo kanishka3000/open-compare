@@ -117,7 +117,7 @@ export function App(): React.JSX.Element {
   }, []);
 
   const selectFolder = useCallback(async (side: 'left' | 'right') => {
-    const chosen = await window.macCompare.selectFolder(`Select the ${side} folder`);
+    const chosen = await window.openCompare.selectFolder(`Select the ${side} folder`);
     if (!chosen) {
       return;
     }

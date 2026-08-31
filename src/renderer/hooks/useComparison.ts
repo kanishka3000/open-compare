@@ -28,7 +28,7 @@ export function useComparison(): ComparisonState & {
 
   useEffect(
     () =>
-      window.macCompare.onComparisonProgress((progress) => {
+      window.openCompare.onComparisonProgress((progress) => {
         setState((previous) => (previous.isComparing ? { ...previous, progress } : previous));
       }),
     [],
@@ -39,7 +39,7 @@ export function useComparison(): ComparisonState & {
     latestRequestId.current = requestId;
     setState((previous) => ({ ...previous, isComparing: true, progress: null, errorMessage: null }));
 
-    const outcome = await window.macCompare.compareDirectories(request);
+    const outcome = await window.openCompare.compareDirectories(request);
     if (latestRequestId.current !== requestId) {
       return;
     }
@@ -56,7 +56,7 @@ export function useComparison(): ComparisonState & {
   }, []);
 
   const cancel = useCallback(() => {
-    void window.macCompare.cancelComparison();
+    void window.openCompare.cancelComparison();
   }, []);
 
   return { ...state, run, cancel };

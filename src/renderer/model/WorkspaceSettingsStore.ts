@@ -2,7 +2,7 @@ import { DEFAULT_COMPARISON_OPTIONS, type ComparisonOptions } from '@core/models
 import { DEFAULT_DIFF_OPTIONS, type DiffOptions } from '@core/models/DiffOptions';
 import { ALL_COMPARISON_STATUSES, type ComparisonStatus } from '@core/models/ComparisonStatus';
 
-const STORAGE_KEY = 'mac-compare.workspace';
+const STORAGE_KEY = 'open-compare.workspace';
 
 export interface WorkspaceSettings {
   readonly leftRoot: string;
