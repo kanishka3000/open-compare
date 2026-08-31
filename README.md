@@ -1,9 +1,17 @@
-# Open Compare
+<p align="center">
+  <img src="docs/icon.png" width="128" height="128" alt="Open Compare">
+</p>
 
-A WinMerge-style directory and file comparison tool for macOS, built with TypeScript, Electron and
-React. Point it at two folders, and it shows you a merged tree of everything that is identical,
-different, or present on only one side — then a synchronised side-by-side diff of any file you pick,
-with word-level highlighting of what actually changed.
+<h1 align="center">Open Compare</h1>
+
+<p align="center">
+  A WinMerge-style directory and file comparison tool for macOS.<br>
+  Built with TypeScript, Electron and React.
+</p>
+
+Point it at two folders, and it shows you a merged tree of everything that is identical, different,
+or present on only one side — then a synchronised side-by-side diff of any file you pick, with
+word-level highlighting of what actually changed.
 
 **Open Compare never writes to your files.** It opens everything read-only; there is no copy, merge or
 delete. Comparing a production folder against a backup cannot damage either one.
@@ -182,9 +190,34 @@ Two SVGs rather than one because an icon has to survive being drawn at 16px in a
 full artwork's five rows per pane turn to grey mush at that size, so the script renders every slice
 of 64px and below from `icon-small.svg`, which says the same thing with three heavier rows.
 
-A packaged app takes its dock icon from the bundle, but `yarn dev` runs under the stock Electron
-binary and would otherwise show the Electron logo. `DockIcon` applies `icon.png` at startup when
-`app.isPackaged` is false, which is the only reason that PNG exists.
+### Why development builds used to say "Electron"
+
+A packaged build carries its own name and icon in `Info.plist`. `yarn dev` does not — it runs the
+app inside the stock `Electron.app` under `node_modules`, and macOS takes the Dock icon, the Dock
+tooltip and the force-quit name from *that* bundle on disk. No amount of `app.setName` reaches them,
+because the Dock reads the bundle rather than asking the running process.
+
+Three things together fix it, and each covers a different surface:
+
+| | fixes |
+| --- | --- |
+| `app.setName` in `main.ts` | the menu bar title and the `userData` path |
+| `DockIcon` applying `icon.png` | the Dock icon, whenever `app.isPackaged` is false |
+| `scripts/brand-dev-electron.sh` | the Dock **label**, tooltip and force-quit name |
+
+The script stamps `CFBundleName` and `CFBundleDisplayName` onto the development `Electron.app` and
+copies `icon.icns` over its `electron.icns`. It runs from `postinstall`, because `yarn install`
+re-extracts that bundle and resets it. It never fails an install — if Electron is not unpacked yet
+there is simply nothing to brand.
+
+To confirm it took, with the app running:
+
+```bash
+lsappinfo list | grep -A2 "Open Compare"    # LSDisplayName should read Open Compare
+```
+
+The bundle identifier still reads `com.github.Electron` in development, which is expected and only
+cosmetic — the packaged app uses `com.opencompare.app`.
 
 ### Troubleshooting
 

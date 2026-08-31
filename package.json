@@ -6,6 +6,7 @@
   "main": "./out/main/main.js",
   "author": "open-compare",
   "scripts": {
+    "postinstall": "./scripts/brand-dev-electron.sh",
     "dev": "electron-vite dev",
     "build": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && electron-vite build",
     "start": "electron-vite preview",

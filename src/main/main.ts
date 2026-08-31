@@ -11,6 +11,10 @@ import { FolderSelectionDialog } from './FolderSelectionDialog';
 import { IpcRouter } from './IpcRouter';
 import { NodeFileSystemReader } from './NodeFileSystemReader';
 
+// Unpackaged runs report themselves as "Electron"; a packaged one already
+// carries this name in its Info.plist, where setting it again is harmless.
+app.setName('Open Compare');
+
 function buildApplication(): { window: ApplicationWindow; menu: ApplicationMenu; router: IpcRouter } {
   const fileSystem = new NodeFileSystemReader();
   const failureTranslator = new FailureTranslator();
